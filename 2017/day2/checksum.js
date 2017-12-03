@@ -1,8 +1,8 @@
 const fs = require('fs');
 
-real = fs.readFileSync('spreadsheet.txt', 'utf8');
-test1 = fs.readFileSync('unit_test_1.txt', 'utf8');
-test2 = fs.readFileSync('unit_test_2.txt', 'utf8');
+const real = fs.readFileSync('spreadsheet.txt', 'utf8');
+const test1 = fs.readFileSync('unit_test_1.txt', 'utf8');
+const test2 = fs.readFileSync('unit_test_2.txt', 'utf8');
 
 function readRows(spreadsheet) {
   return spreadsheet.split('\n').map(row => row.split(' ').map(int => parseInt(int)));
