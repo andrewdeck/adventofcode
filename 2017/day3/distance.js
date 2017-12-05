@@ -1,3 +1,5 @@
+const assert = require('assert');
+
 function distance(num) {
   let x = 0, y = 0;
 
@@ -92,13 +94,11 @@ function firstLarger(num) {
   return lastNumber;
 }
 
-if (distance(1) === 0 &&
-    distance(12) === 3 &&
-    distance(23) === 2 &&
-    distance(1024) === 31) {
-  console.log('Part 1: '+ distance(325489));
-} else {
-  console.log('Unit tests failed');
-}
+assert.equal(distance(1),0);
+assert.equal(distance(12),3);
+assert.equal(distance(23), 2);
+assert.equal(distance(1024), 31);
+
+console.log('Part 1: '+ distance(325489));
 
 console.log('Part 2: ' + firstLarger(325489));

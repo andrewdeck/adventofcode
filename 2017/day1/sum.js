@@ -1,4 +1,5 @@
 const fs = require('fs');
+const assert = require('assert');
 
 const input = fs.readFileSync('input.txt', 'utf8');
 
@@ -25,23 +26,18 @@ function sum2(str) {
 }
 
 
-if (sum1('1122') === 3 &&
-    sum1('1111') === 4 &&
-    sum1('1234') === 0 &&
-    sum1('91212129') === 9) {
-  console.log('Unit tests passed');
-  console.log('Part 1: ' + sum1(input));
-} else {
-  console.log('Unit tests failed: part 1');
-}
+assert.equal(sum1('1122'), 3);
+assert.equal(sum1('1111'), 4);
+assert.equal(sum1('1234'), 0);
+assert.equal(sum1('91212129'), 9);
 
-if (sum2('1212') === 6 &&
-    sum2('1221') === 0 &&
-    sum2('123425') === 4 &&
-    sum2('123123') === 12 &&
-    sum2('12131415') === 4) {
-  console.log('Unit tests passed');
-  console.log('Part 2: ' + sum2(input));
-} else {
-  console.log('Unit tests failed: part 2');
-}
+console.log('Part 1: ' + sum1(input));
+
+
+assert.equal(sum2('1212'), 6);
+assert.equal(sum2('1221'), 0);
+assert.equal(sum2('123425'), 4);
+assert.equal(sum2('123123'), 12);
+assert.equal(sum2('12131415'), 4);
+
+console.log('Part 2: ' + sum2(input));

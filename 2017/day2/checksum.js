@@ -1,4 +1,5 @@
 const fs = require('fs');
+const assert = require('assert');
 
 const real = fs.readFileSync('spreadsheet.txt', 'utf8');
 const test1 = fs.readFileSync('unit_test_1.txt', 'utf8');
@@ -38,13 +39,14 @@ function checkdiv(spreadsheet) {
   return sum;
 }
 
-if(checksum(test1) === 18 && checkdiv(test2) === 9) {
-  console.log('Part 1: ' + checksum(real));
-	console.log('Part 2: ' + checkdiv(real));
-} else {
-	console.log('Unit tests failed');
-  console.log(checkdiv(test2));
-}
+assert.equal(checksum(test1), 18);
+
+console.log('Part 1: ' + checksum(real));
+
+assert.equal(checkdiv(test2), 9);
+
+console.log('Part 2: ' + checkdiv(real));
+
 
 
 
