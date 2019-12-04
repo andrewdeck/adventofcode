@@ -3,20 +3,20 @@ const assert = require('assert');
 
 const input = fs.readFileSync('input.txt', 'utf8');
 
-// unitTestOne();
+unitTestOne();
 partOne();
 
 
 function partOne() {
   let [wire1, wire2] = input.split('\n');
-  console.log(findClosestIntersection(wire1, wire2));
+  assert.equal(findClosestIntersection(wire1, wire2), 2050);
 }
 
 function findClosestIntersection(wire1, wire2) {
   wire1 = wire1.split(',');
   wire2 = wire2.split(',');
 
-  let pos = { 0: [0] };
+  let path1 = ['x0y0'];
   let x = 0, y = 0;
   for(let i = 0; i< wire1.length; i++){
     let instruction = wire1[i];
@@ -32,13 +32,13 @@ function findClosestIntersection(wire1, wire2) {
       } else if(direction === 'L') {
         x--;
       }
-      if(!pos[x]) pos[x] = [];
-      pos[x].push(y);
+      path1.push(`x${x}y${y}`);
     }
   }
 
-  let shortestDistance, shortX, shortY;
+  let shortestDistance;
   x = 0, y = 0;
+  let path2 = ['x0y0'];
   for(let i = 0; i< wire2.length; i++){
     let instruction = wire2[i];
     let direction = instruction.substring(0,1);
@@ -53,13 +53,12 @@ function findClosestIntersection(wire1, wire2) {
       } else if(direction === 'L') {
         x--;
       }
-      if(pos[x] && pos[x].indexOf(y) > -1) {
+      path2.push(`x${x}y${y}`);
+      if(path1.indexOf(`x${x}y${y}`) > -1) {
         console.log(`found an intersection x: ${x} y: ${y}`);
         let distance = Math.abs(x) + Math.abs(y);
         if(!shortestDistance || distance < shortestDistance) {
           shortestDistance = distance;
-          shortX = x;
-          shortY = y;
         }
       }
     }
