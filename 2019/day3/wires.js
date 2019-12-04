@@ -16,8 +16,10 @@ function findClosestIntersection(wire1, wire2) {
   wire1 = wire1.split(',');
   wire2 = wire2.split(',');
 
-  let path1 = ['x0y0'];
-  let x = 0, y = 0;
+  let path1 = {
+    'x0y0': 0
+  };
+  let x = 0, y = 0, step = 0;
   for(let i = 0; i< wire1.length; i++){
     let instruction = wire1[i];
     let direction = instruction.substring(0,1);
@@ -32,13 +34,16 @@ function findClosestIntersection(wire1, wire2) {
       } else if(direction === 'L') {
         x--;
       }
-      path1.push(`x${x}y${y}`);
+      step++;
+      path1[`x${x}y${y}`] = step;
     }
   }
 
   let shortestDistance;
-  x = 0, y = 0;
-  let path2 = ['x0y0'];
+  x = 0, y = 0, step = 0;
+  let path2 = {
+    'x0y0': 0
+  };
   for(let i = 0; i< wire2.length; i++){
     let instruction = wire2[i];
     let direction = instruction.substring(0,1);
@@ -53,8 +58,9 @@ function findClosestIntersection(wire1, wire2) {
       } else if(direction === 'L') {
         x--;
       }
-      path2.push(`x${x}y${y}`);
-      if(path1.indexOf(`x${x}y${y}`) > -1) {
+      step++;
+      path2[`x${x}y${y}`] = step;
+      if(path1[`x${x}y${y}`]) {
         console.log(`found an intersection x: ${x} y: ${y}`);
         let distance = Math.abs(x) + Math.abs(y);
         if(!shortestDistance || distance < shortestDistance) {
