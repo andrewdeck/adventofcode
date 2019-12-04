@@ -15,7 +15,8 @@
     "rules": {
         "indent": [
             "warn",
-            2
+            2,
+            { "VariableDeclarator": "first" }
         ],
         "linebreak-style": [
             "error",

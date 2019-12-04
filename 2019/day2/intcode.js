@@ -40,11 +40,11 @@ function partOne(noun, verb) {
       break;
     }
     let aPos = program[cur+1],
-      bPos = program[cur+2],
-      destination = program[cur+3];
+        bPos = program[cur+2],
+        destination = program[cur+3];
 
     let aVal = program[aPos],
-      bVal = program[bPos];
+        bVal = program[bPos];
 
     program[destination] = instruction === 1 ? aVal + bVal : aVal * bVal;
 
