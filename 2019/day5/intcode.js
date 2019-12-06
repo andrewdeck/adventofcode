@@ -4,7 +4,7 @@ const fs = require('fs');
 const file = fs.readFileSync('input.txt', 'utf8');
 
 
-partOne(1);
+partOne(5);
 
 
 function partOne(input) {
@@ -52,6 +52,34 @@ function partOne(input) {
       // console.log(`cur: ${cur} Output: ${input} from ${source}`);
       console.log(input);
       cur += 2;
+    } else if(opcode === 5) {
+      let a = getParam(1, instruction),
+          b = getParam(2, instruction);
+      if(a !== 0) { // jump
+        cur = b;
+      } else {
+        cur += 3;
+      }
+    } else if(opcode === 6) {
+      let a = getParam(1, instruction),
+          b = getParam(2, instruction);
+      if(a === 0) { // jump
+        cur = b;
+      } else {
+        cur += 3;
+      }
+    } else if(opcode === 7) {
+      let a = getParam(1, instruction),
+          b = getParam(2, instruction),
+          dest = program[cur+3];
+      program[dest] = a < b ? 1 : 0;
+      cur += 4;
+    } else if(opcode === 8) {
+      let a = getParam(1, instruction),
+          b = getParam(2, instruction),
+          dest = program[cur+3];
+      program[dest] = a === b ? 1 : 0;
+      cur += 4;
     } else {
       console.error('something went wrong');
       console.error(instruction);
