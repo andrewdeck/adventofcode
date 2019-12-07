@@ -4,10 +4,16 @@ const assert = require('assert');
 const file = fs.readFileSync('input.txt', 'utf8');
 
 // unitTestOne();
-partOne();
+// partOne();
+// unitTestTwo();
+partTwo();
 
 function partOne() {
   computeMaxSignal(file);
+}
+
+function partTwo() {
+  computeFeedbackMaxSignal(file);
 }
 
 function permutator(inputArr) {
@@ -27,6 +33,50 @@ function permutator(inputArr) {
   permute(inputArr);
 
   return result;
+}
+
+
+function computeFeedbackMaxSignal(program) {
+  let perms = permutator([5,6,7,8,9]);
+
+  let maxOutput = 0, sequence;
+  for(let p = 0; p < perms.length; p++) {
+  // for(let p = 0; p < 1; p++) {
+    let phases = perms[p];
+    let output;
+    let halted = false;
+    let currentAmp = 0;
+    
+    let A = intcodeComputer(program.split(','), 0, [phases[0], 0]);
+    let B = intcodeComputer(program.split(','), 0, [phases[1], ...A.outputs]);
+    let C = intcodeComputer(program.split(','), 0, [phases[2], ...B.outputs]);
+    let D = intcodeComputer(program.split(','), 0, [phases[3], ...C.outputs]);
+    let E = intcodeComputer(program.split(','), 0, [phases[4], ...D.outputs]);
+    let amps = [A,B,C,D,E];
+    // console.log(A);
+    let inputs = E.outputs;
+    while(!halted) {
+      let amp = amps[currentAmp % 5];
+      let state = intcodeComputer(amp.state, amp.pointer, inputs);
+      amps[currentAmp % 5] = state;
+      inputs = state.outputs;
+      if(currentAmp % 5 === 4) {
+        // console.log(`E outputs: ${state.outputs.join(',')}`);
+        output = state.outputs[state.outputs.length - 1];
+        if(state.HALT) halted = true;
+      }
+      currentAmp++;
+    }
+    
+    if(output > maxOutput) {
+      maxOutput = output;
+      sequence = phases;
+    }
+  }
+
+  console.log(maxOutput);
+  console.log(sequence);
+  return maxOutput;
 }
 
 function computeMaxSignal(program) {
@@ -51,11 +101,6 @@ function computeMaxSignal(program) {
 }
 
 
-
-
-
-
-
 function unitTestOne() {
   let program = '3,15,3,16,1002,16,10,16,1,16,15,15,4,15,99,0,0';
   assert.equal(computeMaxSignal(program), 43210);
@@ -67,11 +112,17 @@ function unitTestOne() {
   assert.equal(computeMaxSignal(program), 65210);
 }
 
+function unitTestTwo() {
+  let program = '3,26,1001,26,-4,26,3,27,1002,27,2,27,1,27,26,27,4,27,1001,28,-1,28,1005,28,6,99,0,0,5';
+  assert.equal(computeFeedbackMaxSignal(program), 139629729);
+  console.log('first one passed');
+  program = '3,52,1001,52,-5,52,3,53,1,52,56,54,1007,54,5,55,1005,55,26,1001,54,-5,54,1105,1,12,1,53,54,53,1008,54,0,55,1001,55,1,55,2,53,55,53,4,53,1001,56,-1,56,1005,56,6,99,0,0,0,0,10';
+  assert.equal(computeFeedbackMaxSignal(program), 18216);
+}
 
-function intcodeComputer(phase, signal, program) {
-  program = program.split(',');
-  let cur = 0, output;
 
+function intcodeComputer(program, cur, inputs) {
+  let outputs = [], HALT = false, needInput = false;
 
   function getParam(pos, instruction) {
     let mode = instruction.slice(-2-pos, -1-pos);
@@ -81,19 +132,13 @@ function intcodeComputer(phase, signal, program) {
     return Number(val);
   }
 
-  let inputCount = 0;
   function getInput() {
     let input;
-    if(inputCount === 0) {
-      input = phase;
-    } else if(inputCount === 1) {
-      input = signal;
-    }
-    inputCount++;
+    input = inputs.shift();
     return input;
   }
 
-  while(program[cur] !== '99') {
+  while(!needInput) {
     let instruction = program[cur]+'';
     let opcode = Number(instruction.slice(-2));
     if(opcode === 1) { // add
@@ -111,11 +156,16 @@ function intcodeComputer(phase, signal, program) {
       cur += 4;
     } else if (opcode === 3) { // write from input
       let dest = program[cur+1];
-      program[dest] = getInput();
-      cur += 2;
+      let nextInput = getInput();
+      if(nextInput === undefined){
+        needInput = true;
+      } else {
+        program[dest] = nextInput;
+        cur += 2;
+      }
     } else if (opcode === 4) { // ouptut to input
       let source = program[cur+1];
-      output = program[source];
+      outputs.push(program[source]);
       cur += 2;
     } else if(opcode === 5) {
       let a = getParam(1, instruction),
@@ -145,12 +195,20 @@ function intcodeComputer(phase, signal, program) {
           dest = program[cur+3];
       program[dest] = a === b ? 1 : 0;
       cur += 4;
+    } else if(opcode === 99) {
+      HALT = true;
+      break;
     } else {
       console.error('something went wrong');
       console.error(instruction);
       break;
     }
   }
-  return output;
+  return {
+    state: program,
+    pointer: cur,
+    outputs: outputs,
+    HALT: HALT
+  };
 }
 
