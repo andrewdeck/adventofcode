@@ -1,11 +1,11 @@
 const fs = require('fs');
-const assert = require('assert');
-
+const _ = require('lodash');
 const file = fs.readFileSync('input.txt', 'utf8');
 
 const WIDTH = 25, HEIGHT = 6;
 
-partOne();
+// partOne();
+partTwo();
 
 
 function partOne() {
@@ -32,9 +32,28 @@ function partOne() {
 }
 
 function partTwo() {
+  let data = file.split('').map(x=>Number(x));
+  let layers = [];
+  let layerSize = WIDTH * HEIGHT;
+  for(let i = 0; i < data.length; i += layerSize) {
+    let layer = data.slice(i, i + layerSize);
+    layers.push(layer);
+  }
+  let finalImage = [];
+  for(let i = 0; i<layerSize; i++) {
+    let pixel = 2;
+    for(let j = 0; j<layers.length; j++) {
+      let lp = layers[j][i];
+      if(lp < 2) {
+        pixel = lp;
+        break;
+      }
+    }
+    finalImage.push(pixel);
+  }
 
-}
-
-function unitTestTwo() {
-  
+  let rows = _.chunk(finalImage, WIDTH);
+  rows.forEach(row => {
+    console.log(row);
+  });
 }
