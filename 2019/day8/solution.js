@@ -52,8 +52,10 @@ function partTwo() {
     finalImage.push(pixel);
   }
 
+  finalImage = finalImage.map(x=> x === 0 ? ' ' : x);
+
   let rows = _.chunk(finalImage, WIDTH);
   rows.forEach(row => {
-    console.log(row);
+    console.log(row.join(' '));
   });
 }
