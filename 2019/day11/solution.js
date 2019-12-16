@@ -5,9 +5,9 @@ const file = fs.readFileSync('input.txt', 'utf8');
 
 
 // unitTestPartOne();
-partOne();
+// partOne();
 // unitTestPartTwo();
-// partTwo();
+partTwo();
 
 
 
@@ -71,7 +71,74 @@ function partOne() {
 }
 
 function partTwo() {
+  const BLACK = 0, WHITE = 1;
+  const UP = 0, RIGHT = 1, DOWN = 2, LEFT = 3;
+  let grid = {'x0y0': {count: 0, color: WHITE}};
+  let pos = {x: 0, y: 0};
+  let dir = UP;
 
+  let max = {x:0, y: 0},
+      min = {x:0, y: 0};
+
+  function key(pos) {
+    return `x${pos.x}y${pos.y}`;
+  }
+
+  function getCurColor() {
+    let color = BLACK;
+    if(grid.hasOwnProperty(key(pos))) {
+      color = grid[key(pos)].color;
+    } 
+    return color;
+  }
+
+  let instPair = [];
+  function receiveInstruction(inst) {
+    instPair.push(inst);
+    if(instPair.length === 2) {
+      let [color, rotate] = instPair;
+      //follow the instructions
+      let cur = grid[key[pos]] || {count: 0, color: BLACK};
+      cur.color = color;
+      cur.count++;
+      grid[key(pos)] = cur;
+
+      if(rotate === 1) {
+        dir++;
+        if(dir === 4) dir = UP;
+      } else {
+        dir--;
+        if(dir === -1) dir = LEFT;
+      }
+
+      if(dir === UP) {
+        pos.y++;
+      } else if (dir === RIGHT) {
+        pos.x++;
+      } else if ( dir === DOWN) {
+        pos.y--;
+      } else {
+        pos.x--;
+      }
+      if(pos.x > max.x) max.x = pos.x;
+      if(pos.y > max.y) max.y = pos.y;
+      if(pos.x < min.x) min.x = pos.x;
+      if(pos.y < min.y) min.y = pos.y;
+      instPair = [];
+    }
+  }
+
+  intcodeComputer(file, getCurColor, receiveInstruction);
+
+  console.log(max, min);
+  for(let i = min.x; i<=max.x; i++) {
+    let row = '';
+    for(let j = max.y; j >=min.y; j--) {
+      let color = grid[key({x:i,y:j})] ? grid[key({x:i,y:j})].color : BLACK;
+      row += color === BLACK ? ' ' : 'X';
+    }
+    console.log(row);
+  }
 }
 
 function unitTestPartOne() {
