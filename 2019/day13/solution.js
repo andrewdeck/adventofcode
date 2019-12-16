@@ -5,9 +5,9 @@ const file = fs.readFileSync('input.txt', 'utf8');
 
 
 // unitTestPartOne();
-partOne();
+// partOne();
 // unitTestPartTwo();
-// partTwo();
+partTwo();
 
 
 
@@ -45,11 +45,69 @@ function partOne() {
   console.log(blockCount);
 }
 
+function render(rows, score) {
+  let stream = process.stderr;
+  rows.forEach((row, index)=> {
+    let line = row.map(t => t===0?' ':t).join('');
+    stream.cursorTo(0, index);
+    stream.write(line);
+    stream.clearLine(1);
+  });
+  stream.cursorTo(0, rows.length);
+  stream.write(`Score: ${score}`);
+  stream.clearLine(1);
+}
+
 function partTwo() {
+  let rows = [];
+  let score = 0;
+  let ball = 0,
+      paddle = 0;
+
+  function getInput() {
+    let joystick = 0;
+    if(ball < paddle) joystick = -1;
+    else if(paddle < ball) joystick = 1;
+    return joystick; 
+  }
+
+  let instruction = [];
+  function receiveInstruction(inst) {
+    instruction.push(inst);
+    if(instruction.length === 3) {
+      let [x, y, tileId] = instruction;
+      if(x === -1 && y === 0) { //score
+        // console.log(`score: ${score}`);
+        score = tileId;
+      } else { //tile update
+        if(!rows[y]) rows[y] = [];
+        rows[y][x] = tileId;
+
+        if(tileId === 3) { // paddle
+          paddle = x;
+        } else if(tileId === 4) { //ball
+          ball = x;
+        }
+      }
+      
+      instruction = [];
+      render(rows, score);
+    }
+  }
+
+  let free = file.replace(/^1/, '2'); // play for free
+
+  intcodeComputer(free, getInput, receiveInstruction);
+  // console.log(score);
 }
 
 function unitTestPartOne() {
-  
+  let stream = process.stdout;
+  for(let i = 0; i<1000000;i++) {
+    stream.cursorTo(0);
+    stream.write(i+'');
+    stream.clearLine(1);
+  }
 }
 
 function unitTestPartTwo() {
