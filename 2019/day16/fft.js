@@ -4,7 +4,21 @@ const _ = require('lodash');
 const file = fs.readFileSync('input', 'utf8');
 
 
-console.log(fft(file, 100).substr(0,8));
+// console.log(fft(file, 100).substr(0,8));
+
+console.log(realSignal('03036732577212944063491565474664'));
+
+function realSignal(input) {
+  let address = Number(input.substr(0,7));
+  let fullSignal = input;
+  for(let i = 0; i < 10000; i++) {
+    fullSignal += input;
+  }
+
+  let result = fft(fullSignal, 100);
+
+  return result.substr(address, 8);
+}
 
 function fft(input, numPhases) {
   let patterns = buildPatterns(input);
