@@ -7,17 +7,28 @@ const file = fs.readFileSync('input', 'utf8');
 // console.log(fft(file, 100).substr(0,8));
 
 console.log(realSignal('03036732577212944063491565474664'));
+console.log(realSignal('02935109699940807407585447034323'));
+console.log(realSignal('03081770884921959731165446850517'));
+console.log(realSignal(file));
 
 function realSignal(input) {
   let address = Number(input.substr(0,7));
-  let fullSignal = input;
+  let fullSignal = '';
   for(let i = 0; i < 10000; i++) {
     fullSignal += input;
   }
 
-  let result = fft(fullSignal, 100);
+  let meaningful = fullSignal.slice(address).split('').map(Number);
 
-  return result.substr(address, 8);
+  for(let i = 0; i < 100; i++) {
+    let output = meaningful.slice();
+    for(let j = meaningful.length-2; j>=0; j--) {
+      output[j] = output[j+1] + meaningful[j];
+    }
+    meaningful = output.map(x => x % 10);
+  }
+
+  return meaningful.slice(0, 8).join('');
 }
 
 function fft(input, numPhases) {
